@@ -1,8 +1,98 @@
 <!DOCTYPE html>
 
 <html>
-  <body>
-    <h1>Hello World</h1>
-    <a href="https://braydenlangley.github.io/WebDev/home">HOME</a>
-  </body>
+    <head>
+        <link rel="stylesheet" type="text/css" href="mystyle.css">
+
+        <div class="header">
+             <h2 style="text-align:left; padding-left: 9%; padding-top:0px;">Brayden Langley</h2>
+        
+            <a href="file:///Users/braydenlangley/Desktop/BraydenLangley.html">Home</a>
+        
+             <div class="dropdown">
+            <button class="dropbtn">Resources</button>
+            <div class="dropdown-content">
+                <a href="#">Blog</a>
+            </div>
+            </div>
+            <a href="#">Portfolio</a>
+            <a href="#">About</a>
+
+        </div>
+
+    </head>
+    
+    <body onload="setInterval (myTimer, 1000)">
+
+        <div class="slider">
+
+            <img style="padding:10px"src="file:///Users/braydenlangley/Pictures/BL.png" alt="">
+
+            <h1 style="text-align:center; padding-top:0px; font-family: Helvetica">Brayden Langley</h1>
+            <p style="text-align:center; color:white; padding:10px">Welcome! My name is Brayden Langley. I am a software developer and designer.</p>
+            <input class="sliderButton" type="button" value="More About Brayden">
+
+        </div>
+
+        <div class="mainContent">
+
+            <h1>Portfolio</h1>
+
+            <p style="color:white; font-size:20px; font-weight:lighter">Here is some of the work I have done.</p>
+            <!--<p>Here is the current time:</p>
+            <h2 id="timerText"></h2>-->
+
+            <img style="padding:1%; min-width:300px"src="http://www.braydenlangley.com/wp-content/uploads/2015/02/iPhone6.png" alt="" width="22%">
+            <img style="padding:1%; min-width:300px"src="http://www.braydenlangley.com/wp-content/uploads/2015/02/iPhone6-1.png" alt="" width="22%">
+            <img style="padding:1%; min-width:370px"src="http://www.braydenlangley.com/wp-content/uploads/2015/02/Screen-Shot-2016-08-19-at-8.17.28-AM.png" alt=""
+            width="47%">
+
+            <div>
+                <input class="sliderButton" type="button" value="View Portfolio">
+            </div>
+        </div>
+
+        <script type="text/javascript">
+
+            function clickMe() {
+               var x = document.getElementById("textInput")
+
+               if (x.value == "password") {
+                   alert("You got it right!!")
+               } else {
+                   alert("You got it wrong!!")
+               }
+            }
+
+            // function myTimer() {
+            //     var d = new Date();
+            //     document.getElementById("timerText").innerHTML = d.toLocaleTimeString();
+            // }
+
+        </script>
+
+
+    <div class="lowerSection">
+
+        <h1>Clients</h1>
+
+        <img style="padding:30px; min-width:300px"src="http://www.braydenlangley.com/wp-content/uploads/2015/02/PBLogo.png" alt=""
+            width="18%">
+
+        <img style="padding:30px; min-width:300px"src="http://www.braydenlangley.com/wp-content/uploads/2015/02/Minahan-Cutting.png" alt=""
+            width="18%">
+
+        <img style="padding:30px; min-width:300px"src="http://www.braydenlangley.com/wp-content/uploads/2015/02/UOLogo.png" alt=""
+            width="18%">
+
+    </div>
+
+    </body>
+
+    <div class="footer">
+
+        <p>Copyright 2016 by Brayden Langley
+
+    </div>
+
 </html>
