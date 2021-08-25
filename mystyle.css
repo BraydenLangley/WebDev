@@ -1,0 +1,189 @@
+/*
+Here is a simple stylesheet I created. Copyright 2016 by Brayden Langley.
+*/
+
+h1 {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 45px;
+    padding: 2px;
+}
+
+h3 {
+    color: white;
+    text-align: center;
+    font-size: 24;
+}
+
+p {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+input [type=text]{
+    margin-left: 50%;
+}
+
+input[type=text], select {
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+    font-size: 17px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+input[type=submit] {
+    width: 50%;
+    background-color: #4AAAA5;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Arial, Helvetica, Arial, Helvetica, sans-serif;
+    font-size: 17px;
+}
+
+input[type=submit]:hover {
+    background-color: #E45F56;
+}
+
+input[type=text]:focus {
+    border: 3px solid #555;
+}
+
+.buttonHolder {
+    text-align: center;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+.footer {
+    background-color: #171717;
+    padding: 20px;
+    padding-bottom: 7px;
+    color: gray;
+    text-align: center;
+}
+
+.header {
+    background-color: #161616;
+    color: white;
+    border-radius: 2px;
+    padding: 4px;
+    text-align: right;
+}
+
+a {
+    color: #4AAAA5;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+    padding: 10px;
+    padding-bottom: 30px;
+    text-decoration: none;
+    text-align: right;
+}
+
+a:hover {
+    color: #E45F56; 
+}
+
+body {
+    padding: 0px;
+    margin: 0px;
+}
+
+.mainContent {
+    padding: 20px;
+    background-color: #4AAAA5;
+    text-align: center;
+}
+
+.slider {
+    background-image: url("http://www.braydenlangley.com/wp-content/uploads/2015/02/pexels-photo-25990.jpg");
+    background-size: cover;
+    height: 570px;
+    min-width: 100%;
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+}
+
+.sliderButton {
+    /*width: 10%;*/
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 14px 16px;
+    margin: 8px 0;
+    border-color: transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: Arial, Helvetica, Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: lighter;
+}
+
+.sliderButton:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.lowerSection {
+    background-color: #071019;
+    text-align: center;
+    font-weight: lighter;
+    padding: 10px;
+}
+
+/* Dropdown Button */
+.dropbtn {
+    background-color: transparent;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    padding: 10px;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+    /*background-color: #3e8e41;*/
+    color: lightgray;
+}
