@@ -72,11 +72,11 @@ input[type=text]:focus {
 }
 
 .header {
-    background-color: #161616;
+    background-color: #000000;
     color: white;
     border-radius: 2px;
-    padding: 4px;
-    text-align: right;
+    padding: 10px;
+    text-align: left;
 }
 
 a {
