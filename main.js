@@ -27,14 +27,14 @@ document.addEventListener('keyup', function (evt) {
     keys[evt.code] = false;
 });
 
-document.addEventListener('touchstart', handleStart, false);
+// document.addEventListener('touchstart', handleStart, false);
+
+var el = document.getElementsByTagName("game");  
+el.addEventListener("touchstart", handleStart, false); 
 
 function handleStart() {
     keys[evt.code] = true;
 }
-
-// var el = document.getElementsByTagName("canvas");  
-// el.addEventListener("touchstart", handleStart, false); 
 
 // Player Object Class
 class Player {
