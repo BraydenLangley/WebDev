@@ -27,6 +27,15 @@ document.addEventListener('keyup', function (evt) {
     keys[evt.code] = false;
 });
 
+document.addEventListener('touchstart', handleStart, false);
+
+function handleStart() {
+    keys[evt.code] = true;
+}
+
+// var el = document.getElementsByTagName("canvas");  
+// el.addEventListener("touchstart", handleStart, false); 
+
 // Player Object Class
 class Player {
     constructor (x,y,w,h,c) {
@@ -45,7 +54,7 @@ class Player {
 
     Animate () {
         // Jump
-        if (keys['Space'] || keys['KeyW']) {
+        if (keys['Space'] || keys['KeyW'] || keys['touchstart']) {
             this.Jump();
         } else {
             this.jumpTimer = 0;
