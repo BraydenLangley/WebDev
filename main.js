@@ -18,6 +18,8 @@ let obsticales = [];
 let gameSpeed;
 let keys = {};
 
+let jump = false;
+
 // Event Listeners
 document.addEventListener('keydown', function (evt) {
     keys[evt.code] = true;
@@ -28,13 +30,17 @@ document.addEventListener('keyup', function (evt) {
 });
 
 // document.addEventListener('touchstart', handleStart, false);
-
-var el = document.getElementsByTagName("game");  
-el.addEventListener("touchstart", handleStart, false); 
-
-function handleStart() {
+  
+canvas.addEventListener("click", function (evt) {
     keys[evt.code] = true;
-}
+    console.log("clicked");
+    jump = true;
+});
+
+
+// function handleStart() {
+//     keys[evt.code] = true;
+// }
 
 // Player Object Class
 class Player {
@@ -54,8 +60,10 @@ class Player {
 
     Animate () {
         // Jump
-        if (keys['Space'] || keys['KeyW'] || keys['touchstart']) {
+        if (keys['Space'] || keys['KeyW'] || jump == true) {
+            console.log("Jump");
             this.Jump();
+            jump = false;
         } else {
             this.jumpTimer = 0;
         }
