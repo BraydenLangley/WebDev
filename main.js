@@ -1,6 +1,7 @@
 // JumpIt Game
 // Game Inspired by YT Tutorial
 // Created by Brayden Langley
+// Javascript
 // 08/27/2021
 
 const canvas = document.getElementById('game');
