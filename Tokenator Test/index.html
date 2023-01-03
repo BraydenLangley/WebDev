@@ -61,7 +61,7 @@
         <!--Check for new messages-->
         <script>
             const checkforNewMessages = async () => {
-                const newMessages = await window.Tokenator.listMessages({ messageTypes: ['metanet icu token'], acknowledged: false})
+                const newMessages = await window.Tokenator.listMessages({ messageTypes: ['directPayment'], acknowledged: false})
                 if (!newMessages || newMessages.length === 0) {
                     document.getElementById('mailStatus').innerText = 'No new messages'
                 } else {
@@ -92,7 +92,7 @@
 
         <button onclick="{( async () => {
             try {
-                const result = await window.Tokenator.receiveMessages(['metanet icu token'])
+                const result = await window.Tokenator.receiveMessages(['directPayment'])
                 alert('Success!')
             } catch (error) {
                 alert(error)
