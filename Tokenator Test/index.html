@@ -34,7 +34,7 @@
                         alert('Please fill out the required fields!')
                         return
                     }
-                    const result = await new window.Tokenator().sendMessage({ 
+                    const result = await window.Tokenator.sendMessage({ 
                         type: tokenType, 
                         amount, 
                         recipient
