@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="tokenator.js"></script>
+        <link href="style.css" type="text/css" rel="stylesheet" /> 
+    </head>
+    <body>
+        <script>
+            window.Tokenator = new window.Tokenator() // EXAMPLE_WITH_PRIV_KEY: window.Tokenator({clientPrivateKey: '6dcc124be5f382be631d49ba12f61adbce33a5ac14f6ddee12de25272f943f8b'})
+        </script>
+        <h1>Welcome to the PeerServ UI</h1>
+        <p>This is an example website that shows how to use tokenator to interact with a PeerServ instance.</p>
+
+        <!--Example input form-->
+        <form onsubmit="{handleSubmit()}">
+            <label for="recipient">Recipient Identity Key</label><br>
+            <input type="text" id="recipient" name="recipient" placeholder="identity key" value=""><br>
+            <label for="tokenType">Token Type</label><br>
+            <input type="text" id="tokenType" name="tokenType" placeholder="token type identifier" value=""><br>
+            <label for="amount">Amount to Send (satoshis)</label><br>
+            <input type="text" id="amount" name="amount" placeholder="100"><br><br>
+        </form> 
+
+
+        <!--Handle submitting the payment-->
+        <button onclick="{handleSubmit()}">Send</button>
+        <script>
+            const handleSubmit = ( async () => {
+                try {
+                    let recipient = document.getElementById('recipient').value
+                    let amount = Number(document.getElementById('amount').value)
+                    let tokenType = document.getElementById('tokenType').value
+                    if (!recipient || !amount || !tokenType) {
+                        alert('Please fill out the required fields!')
+                        return
+                    }
+                    const result = await new window.Tokenator().sendMessage({ 
+                        type: tokenType, 
+                        amount, 
+                        recipient
+                    })
+                    
+                    alert(`${amount} satoshis sent to ${recipient}`)
+                } catch (error) {
+                    alert(error)
+                }
+            } )
+        </script>
+
+        <!--Display new messages-->
+        <h2 id='mailStatus'></h2>
+        <table id="myMessages">
+            <tbody id="tbody">
+                <tr>
+                    <th>Sender</th>
+                    <th>Type</th>
+                </tr>
+            </tbody>
+        </table>
+
+        <!--Check for new messages-->
+        <script>
+            const checkforNewMessages = async () => {
+                const newMessages = await window.Tokenator.listMessages({ messageTypes: ['metanet icu token'], acknowledged: false})
+                if (!newMessages || newMessages.length === 0) {
+                    document.getElementById('mailStatus').innerText = 'No new messages'
+                } else {
+                    document.getElementById('mailStatus').innerText = 'You got mail!'
+
+                    let list = document.getElementById("myMessages");
+                    // newMessages = newMessages.reverse()
+                    newMessages.forEach((message)=> {
+                        let tblBody = document.getElementById("tbody")
+                        const row = document.createElement("tr");
+
+                        const senderCell = document.createElement("td");
+                        const sender = document.createTextNode(message.sender);
+                        senderCell.appendChild(sender);
+                        row.appendChild(senderCell);
+
+                        const typeCell = document.createElement("td");
+                        const type = document.createTextNode(message.type);
+                        typeCell.appendChild(type);
+                        row.appendChild(typeCell);
+
+                        tblBody.appendChild(row);
+                    })
+                }
+            }
+            checkforNewMessages()
+        </script>
+
+        <button onclick="{( async () => {
+            try {
+                const result = await window.Tokenator.receiveMessages(['metanet icu token'])
+                alert('Success!')
+            } catch (error) {
+                alert(error)
+            }
+            } )()}">
+            Receive All Tokens
+        </button>
+    </body>
+</html>
