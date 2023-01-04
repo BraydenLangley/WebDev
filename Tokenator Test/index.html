@@ -99,10 +99,11 @@
                     document.getElementById("loader").style.display = "block"
                     try {
                         const result = await window.Tokenator.receiveMessages()
-                    document.getElementById("loader").style.display = "none"
+                        document.getElementById("loader").style.display = "none"
                         alert('Success!')
+                        checkforNewMessages()
                     } catch (error) {
-                    document.getElementById("loader").style.display = "none"
+                        document.getElementById("loader").style.display = "none"
                         alert(error)
                     }
                 }
