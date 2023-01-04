@@ -6,7 +6,7 @@
     </head>
     <body>
         <script>
-            window.Tokenator = new window.Tokenator() // EXAMPLE_WITH_PRIV_KEY: window.Tokenator({clientPrivateKey: '6dcc124be5f382be631d49ba12f61adbce33a5ac14f6ddee12de25272f943f8b'})
+            window.Tokenator = new window.Tokenator()
         </script>
         <div class="mainContent">
             <h1>Welcome to the PeerServ UI</h1>
@@ -16,7 +16,7 @@
             <form onsubmit="{handleSubmit()}">
                 <label for="recipient">Recipient Identity Key</label><br>
                 <input type="text" id="recipient" name="recipient" placeholder="identity key" value=""><br>
-                <label for="tokenType">Token Type</label><br>
+                <label for="tokenType">MessageBox Name</label><br>
                 <input type="text" id="tokenType" name="tokenType" placeholder="token type identifier" value=""><br>
                 <label for="amount">Amount to Send (satoshis)</label><br>
                 <input type="text" id="amount" name="amount" placeholder="100"><br><br>
@@ -49,12 +49,12 @@
             </script>
 
             <!--Display new messages-->
-            <h2 id='mailStatus'></h2>
+            <h2 id="mailStatus"></h2>
             <table id="myMessages">
                 <tbody id="tbody">
                     <tr>
                         <th>Sender</th>
-                        <th>Type</th>
+                        <th>MessageBox</th>
                     </tr>
                 </tbody>
             </table>
@@ -62,7 +62,7 @@
             <!--Check for new messages-->
             <script>
                 const checkforNewMessages = async () => {
-                    const newMessages = await window.Tokenator.listMessages({ messageTypes: ['directPayment'], acknowledged: false})
+                    const newMessages = await window.Tokenator.listMessages({ acknowledged: false})
                     if (!newMessages || newMessages.length === 0) {
                         document.getElementById('mailStatus').innerText = 'No new messages'
                     } else {
@@ -92,7 +92,7 @@
 
                 const receiveMessages =  async () => {
                     try {
-                        const result = await window.Tokenator.receiveMessages(['directPayment'])
+                        const result = await window.Tokenator.receiveMessages()
                         alert('Success!')
                     } catch (error) {
                         alert(error)
