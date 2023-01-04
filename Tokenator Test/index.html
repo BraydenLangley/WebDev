@@ -13,7 +13,7 @@
             <p>This is an example website that shows how to use tokenator to interact with a PeerServ instance.</p>
 
             <!--Example input form-->
-            <form onsubmit="{handleSubmit()}">
+            <form>
                 <label for="recipient">Recipient Identity Key</label><br>
                 <input type="text" id="recipient" name="recipient" placeholder="identity key" value=""><br>
                 <label for="tokenType">MessageBox Name</label><br>
@@ -22,17 +22,20 @@
                 <input type="text" id="amount" name="amount" placeholder="100"><br><br>
             </form> 
 
+            <div id="loader" class="loader"></div>
 
             <!--Handle submitting the payment-->
             <button class="tokenButton" onclick="{handleSubmit()}">Send</button>
             <script>
                 const handleSubmit = ( async () => {
+                    document.getElementById("loader").style.display = "block"
                     try {
                         let recipient = document.getElementById('recipient').value
                         let amount = Number(document.getElementById('amount').value)
                         let tokenType = document.getElementById('tokenType').value
                         if (!recipient || !amount || !tokenType) {
                             alert('Please fill out the required fields!')
+                            document.getElementById("loader").style.display = "none"
                             return
                         }
                         const result = await window.Tokenator.sendMessage({ 
@@ -40,9 +43,10 @@
                             amount, 
                             recipient
                         })
-                        
+                        document.getElementById("loader").style.display = "none"
                         alert(`${amount} satoshis sent to ${recipient}`)
                     } catch (error) {
+                        document.getElementById("loader").style.display = "none"
                         alert(error)
                     }
                 } )
@@ -61,6 +65,7 @@
 
             <!--Check for new messages-->
             <script>
+                document.getElementById("loader").style.display = "none"
                 const checkforNewMessages = async () => {
                     const newMessages = await window.Tokenator.listMessages({ acknowledged: false})
                     if (!newMessages || newMessages.length === 0) {
@@ -91,10 +96,13 @@
                 checkforNewMessages()
 
                 const receiveMessages =  async () => {
+                    document.getElementById("loader").style.display = "block"
                     try {
                         const result = await window.Tokenator.receiveMessages()
+                    document.getElementById("loader").style.display = "none"
                         alert('Success!')
                     } catch (error) {
+                    document.getElementById("loader").style.display = "none"
                         alert(error)
                     }
                 }
@@ -105,5 +113,27 @@
                 Receive All Tokens
             </button>
         </div>
+<style>
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 50px;
+  height: 50px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
     </body>
 </html>
