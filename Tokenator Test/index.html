@@ -35,14 +35,13 @@
                     try {
                         let recipient = document.getElementById('recipient').value
                         let amount = Number(document.getElementById('amount').value)
-                        let tokenType = document.getElementById('tokenType').value
-                        if (!recipient || !amount || !tokenType) {
+                        if (!recipient || !amount) {
                             alert('Please fill out the required fields!')
                             document.getElementById("loader").style.display = "none"
                             return
                         }
                         const result = await window.Tokenator.sendMessage({ 
-                            type: tokenType, 
+                            type: 'payment_inbox', 
                             amount, 
                             recipient
                         })
@@ -68,7 +67,6 @@
                     </tr>
                 </tbody>
             </table>
-            
 
             <!--Check for new messages-->
             <script>
@@ -77,7 +75,7 @@
                 list.style.display = "none"
                 let newMessages = []
                 const checkforNewMessages = async () => {
-                    const newMessages = await window.Tokenator.listMessages({ acknowledged: false})
+                    const newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
                     if (!newMessages || newMessages.length === 0) {
                         document.getElementById('mailStatus').innerText = 'No new payments'
                     } else {
