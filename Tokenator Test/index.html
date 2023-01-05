@@ -46,9 +46,9 @@
                             recipient
                         })
                         document.getElementById("loader").style.display = "none"
-                        const toast = document.getElementById('toast');
-                        toast.querySelector('.toast-body').innerHTML = "Payment Sent! 🎉";
-                        toast.classList.add('visible');
+                        const toast = document.getElementById('toast')
+                        toast.querySelector('.toast-body').innerHTML = "Payment Sent! 🎉"
+                        toast.classList.add('visible')
                     } catch (error) {
                         document.getElementById("loader").style.display = "none"
                         alert(error)
@@ -65,6 +65,7 @@
                 <tbody id="tbody">
                     <tr>
                         <th>Sender</th>
+                        <th>Date</th>
                         <th>Amount</th>
                         <th></th>
                     </tr>
@@ -73,7 +74,7 @@
 
             <!--Check for new messages-->
             <script>
-                let list = document.getElementById("myMessages");
+                let list = document.getElementById("myMessages")
                 document.getElementById("loader").style.display = "none"
                 list.style.display = "none"
                 let newMessages = []
@@ -81,7 +82,7 @@
                     let newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
                     // Example continous checking for new messages (could be improved!)
                     while(!newMessages || newMessages.length === 0) {
-                        await new Promise(resolve => setTimeout(resolve, 4000));
+                        await new Promise(resolve => setTimeout(resolve, 4000))
                         newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
                     }
                     if (!newMessages || newMessages.length === 0) {
@@ -90,28 +91,45 @@
                         document.getElementById('mailStatus').innerText = 'Incoming Payments'
                         list.style.display = "block"
                     
-                        // newMessages = newMessages.reverse()
+                        newMessages = newMessages.reverse()
                         newMessages.forEach((message)=> {
                             let tblBody = document.getElementById("tbody")
-                            const row = document.createElement("tr");
+                            const row = document.createElement("tr")
 
-                            const senderCell = document.createElement("td");
-                            const sender = document.createTextNode(message.sender);
-                            senderCell.appendChild(sender);
-                            row.appendChild(senderCell);
+                            const senderCell = document.createElement("td")
+                            const sender = document.createTextNode(message.sender)
+                            senderCell.appendChild(sender)
+                            row.appendChild(senderCell)
 
+                            // Format the timestamp
+                            var date = new Date(message.created_at)
+                            var options = {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            second: 'numeric'
+                            }
+                            var formattedDate = date.toLocaleDateString('en-US', options)
+                            
+                            const dateCell = document.createElement("td")
+                            const dateTxt = document.createTextNode(formattedDate)
+                            dateCell.appendChild(dateTxt)
+                            row.appendChild(dateCell)
+
+                            // Add the amount column
                             const amount = JSON.parse(message.body).amount
-
-                            const amountCell = document.createElement("td");
-                            const amountTxt = document.createTextNode(amount + ' sats');
-                            amountCell.appendChild(amountTxt);
+                            const amountCell = document.createElement("td")
+                            const amountTxt = document.createTextNode(amount + ' sats')
+                            amountCell.appendChild(amountTxt)
                             row.appendChild(amountCell)
 
-                            const actionCell = document.createElement("td");
+                            const actionCell = document.createElement("td")
 
-                            const acceptBtn = document.createElement("BUTTON");
-                            acceptBtn.innerHTML = "Accept";
-                            acceptBtn.classList.add('acceptButton');
+                            const acceptBtn = document.createElement("BUTTON")
+                            acceptBtn.innerHTML = "Accept"
+                            acceptBtn.classList.add('acceptButton')
                             acceptBtn.onclick = async () => {
                                 document.getElementById("loader").style.display = "block"
                                 try {
@@ -120,9 +138,9 @@
                                         messageBoxType: 'payment_inbox'
                                     })
                                     document.getElementById("loader").style.display = "none"
-                                    const toast = document.getElementById('toast');
-                                    toast.querySelector('.toast-body').innerHTML = "Payment recieved!";
-                                    toast.classList.add('visible');
+                                    const toast = document.getElementById('toast')
+                                    toast.querySelector('.toast-body').innerHTML = "Payment recieved!"
+                                    toast.classList.add('visible')
                                 } catch (error) {
                                     document.getElementById("loader").style.display = "none"
                                     alert(error)
@@ -130,9 +148,9 @@
                                 // Refresh the page after 2sec
                                 setTimeout(() => { location.reload() }, 1500)
                             }
-                            actionCell.appendChild(acceptBtn);
-                            row.appendChild(actionCell);
-                            tblBody.appendChild(row);
+                            actionCell.appendChild(acceptBtn)
+                            row.appendChild(actionCell)
+                            tblBody.appendChild(row)
                         })
                     }
                 }
