@@ -4,25 +4,28 @@
         <script src="tokenator.js"></script>
         <link href="style.css" type="text/css" rel="stylesheet" /> 
     </head>
-    <body>
+    <body class="bg-blur">
         <script>
             window.Tokenator = new window.Tokenator()
         </script>
+
+        <!--Toast Notification-->
+        <div class="toast" id="toast">
+            <div class="toast-body">
+            </div>
+        </div>
         <div class="mainContent">
-            <h1>Welcome to the PeerServ UI</h1>
-            <p>This is an example website that shows how to use tokenator to interact with a PeerServ instance.</p>
+            <h1 class="header">BabbagePay</h1>
+            <h4 class="subheading">Peer-to-Peer Payments</h4>
+            <p>Enter your recipient's identityKey, the amount, and send your payment!</p>
 
             <!--Example input form-->
             <form>
-                <label for="recipient">Recipient Identity Key</label><br>
+                <label for="recipient">Recipient</label><br>
                 <input type="text" id="recipient" name="recipient" placeholder="identity key" value=""><br>
-                <label for="tokenType">MessageBox Name</label><br>
-                <input type="text" id="tokenType" name="tokenType" placeholder="token type identifier" value=""><br>
-                <label for="amount">Amount to Send (satoshis)</label><br>
+                <label for="amount">Amount (satoshis)</label><br>
                 <input type="text" id="amount" name="amount" placeholder="100"><br><br>
             </form> 
-
-            <div id="loader" class="loader"></div>
 
             <!--Handle submitting the payment-->
             <button class="tokenButton" onclick="{handleSubmit()}">Send</button>
@@ -52,28 +55,35 @@
                 } )
             </script>
 
+            <div id="loader" class="loader"></div>
+
             <!--Display new messages-->
             <h2 id="mailStatus"></h2>
             <table id="myMessages">
                 <tbody id="tbody">
                     <tr>
                         <th>Sender</th>
-                        <th>MessageBox</th>
+                        <th>Amount</th>
+                        <th></th>
                     </tr>
                 </tbody>
             </table>
+            
 
             <!--Check for new messages-->
             <script>
+                let list = document.getElementById("myMessages");
                 document.getElementById("loader").style.display = "none"
+                list.style.display = "none"
+                let newMessages = []
                 const checkforNewMessages = async () => {
                     const newMessages = await window.Tokenator.listMessages({ acknowledged: false})
                     if (!newMessages || newMessages.length === 0) {
-                        document.getElementById('mailStatus').innerText = 'No new messages'
+                        document.getElementById('mailStatus').innerText = 'No new payments'
                     } else {
-                        document.getElementById('mailStatus').innerText = 'You got mail!'
+                        document.getElementById('mailStatus').innerText = 'Incoming Payments'
+                        list.style.display = "block"
                     }
-                    let list = document.getElementById("myMessages");
                     // newMessages = newMessages.reverse()
                     newMessages.forEach((message)=> {
                         let tblBody = document.getElementById("tbody")
@@ -84,34 +94,44 @@
                         senderCell.appendChild(sender);
                         row.appendChild(senderCell);
 
-                        const typeCell = document.createElement("td");
-                        const type = document.createTextNode(message.type);
-                        typeCell.appendChild(type);
-                        row.appendChild(typeCell);
+                        const amount = JSON.parse(message.body).amount
 
+                        const amountCell = document.createElement("td");
+                        const amountTxt = document.createTextNode(amount + ' sats');
+                        amountCell.appendChild(amountTxt);
+                        row.appendChild(amountCell)
+
+                        const actionCell = document.createElement("td");
+
+                        const acceptBtn = document.createElement("BUTTON");
+                        acceptBtn.innerHTML = "Accept";
+                        acceptBtn.classList.add('acceptButton');
+                        acceptBtn.onclick = async () => {
+                            document.getElementById("loader").style.display = "block"
+                            try {
+                                const result = await window.Tokenator.readMessage({
+                                    messageId: message.messageId, 
+                                    messageBoxType: 'payment_inbox'
+                                })
+                                document.getElementById("loader").style.display = "none"
+                                const toast = document.getElementById('toast');
+                                toast.querySelector('.toast-body').innerHTML = "Payment recieved!";
+                                toast.classList.add('visible');
+                            } catch (error) {
+                                document.getElementById("loader").style.display = "none"
+                                alert(error)
+                            }
+                            // Refresh the page after 2sec
+                            setTimeout(() => { location.reload() }, 1500)
+                        }
+                        actionCell.appendChild(acceptBtn);
+                        row.appendChild(actionCell);
                         tblBody.appendChild(row);
                     })
+                    window.newMessages = newMessages
                 }
                 checkforNewMessages()
-
-                const receiveMessages =  async () => {
-                    document.getElementById("loader").style.display = "block"
-                    try {
-                        const result = await window.Tokenator.receiveMessages()
-                        document.getElementById("loader").style.display = "none"
-                        alert('Success!')
-                        checkforNewMessages()
-                    } catch (error) {
-                        document.getElementById("loader").style.display = "none"
-                        alert(error)
-                    }
-                }
             </script>
-
-
-            <button class="tokenButton" onclick="{receiveMessages()}">
-                Receive All Tokens
-            </button>
         </div>
     </body>
 </html>
