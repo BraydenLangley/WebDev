@@ -47,12 +47,12 @@ td:nth-last-child(1) {
     content: '';
     background-image: url('https://images.unsplash.com/photo-1538370965046-79c0d6907d47?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1169&q=80');
     background-size: cover;
-    height: 120%;
+    height: 125%;
     width: 120%;
     position: absolute;
     filter: blur(40px);
     z-index: -1;
-    top: -6vh;
+    top: -3vh;
     left: -10vw;
 }
 label {

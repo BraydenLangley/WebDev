@@ -78,58 +78,63 @@
                 list.style.display = "none"
                 let newMessages = []
                 const checkforNewMessages = async () => {
-                    const newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
+                    let newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
+                    // Example continous checking for new messages (could be improved!)
+                    while(!newMessages || newMessages.length === 0) {
+                        await new Promise(resolve => setTimeout(resolve, 4000));
+                        newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
+                    }
                     if (!newMessages || newMessages.length === 0) {
                         document.getElementById('mailStatus').innerText = 'No new payments'
                     } else {
                         document.getElementById('mailStatus').innerText = 'Incoming Payments'
                         list.style.display = "block"
-                    }
-                    // newMessages = newMessages.reverse()
-                    newMessages.forEach((message)=> {
-                        let tblBody = document.getElementById("tbody")
-                        const row = document.createElement("tr");
+                    
+                        // newMessages = newMessages.reverse()
+                        newMessages.forEach((message)=> {
+                            let tblBody = document.getElementById("tbody")
+                            const row = document.createElement("tr");
 
-                        const senderCell = document.createElement("td");
-                        const sender = document.createTextNode(message.sender);
-                        senderCell.appendChild(sender);
-                        row.appendChild(senderCell);
+                            const senderCell = document.createElement("td");
+                            const sender = document.createTextNode(message.sender);
+                            senderCell.appendChild(sender);
+                            row.appendChild(senderCell);
 
-                        const amount = JSON.parse(message.body).amount
+                            const amount = JSON.parse(message.body).amount
 
-                        const amountCell = document.createElement("td");
-                        const amountTxt = document.createTextNode(amount + ' sats');
-                        amountCell.appendChild(amountTxt);
-                        row.appendChild(amountCell)
+                            const amountCell = document.createElement("td");
+                            const amountTxt = document.createTextNode(amount + ' sats');
+                            amountCell.appendChild(amountTxt);
+                            row.appendChild(amountCell)
 
-                        const actionCell = document.createElement("td");
+                            const actionCell = document.createElement("td");
 
-                        const acceptBtn = document.createElement("BUTTON");
-                        acceptBtn.innerHTML = "Accept";
-                        acceptBtn.classList.add('acceptButton');
-                        acceptBtn.onclick = async () => {
-                            document.getElementById("loader").style.display = "block"
-                            try {
-                                const result = await window.Tokenator.readMessage({
-                                    messageId: message.messageId, 
-                                    messageBoxType: 'payment_inbox'
-                                })
-                                document.getElementById("loader").style.display = "none"
-                                const toast = document.getElementById('toast');
-                                toast.querySelector('.toast-body').innerHTML = "Payment recieved!";
-                                toast.classList.add('visible');
-                            } catch (error) {
-                                document.getElementById("loader").style.display = "none"
-                                alert(error)
+                            const acceptBtn = document.createElement("BUTTON");
+                            acceptBtn.innerHTML = "Accept";
+                            acceptBtn.classList.add('acceptButton');
+                            acceptBtn.onclick = async () => {
+                                document.getElementById("loader").style.display = "block"
+                                try {
+                                    const result = await window.Tokenator.readMessage({
+                                        messageId: message.messageId, 
+                                        messageBoxType: 'payment_inbox'
+                                    })
+                                    document.getElementById("loader").style.display = "none"
+                                    const toast = document.getElementById('toast');
+                                    toast.querySelector('.toast-body').innerHTML = "Payment recieved!";
+                                    toast.classList.add('visible');
+                                } catch (error) {
+                                    document.getElementById("loader").style.display = "none"
+                                    alert(error)
+                                }
+                                // Refresh the page after 2sec
+                                setTimeout(() => { location.reload() }, 1500)
                             }
-                            // Refresh the page after 2sec
-                            setTimeout(() => { location.reload() }, 1500)
-                        }
-                        actionCell.appendChild(acceptBtn);
-                        row.appendChild(actionCell);
-                        tblBody.appendChild(row);
-                    })
-                    window.newMessages = newMessages
+                            actionCell.appendChild(acceptBtn);
+                            row.appendChild(actionCell);
+                            tblBody.appendChild(row);
+                        })
+                    }
                 }
                 checkforNewMessages()
             </script>
