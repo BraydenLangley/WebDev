@@ -46,11 +46,14 @@
                             recipient
                         })
                         document.getElementById("loader").style.display = "none"
-                        alert(`${amount} satoshis sent to ${recipient}`)
+                        const toast = document.getElementById('toast');
+                        toast.querySelector('.toast-body').innerHTML = "Payment Sent! 🎉";
+                        toast.classList.add('visible');
                     } catch (error) {
                         document.getElementById("loader").style.display = "none"
                         alert(error)
                     }
+                    setTimeout(() => { location.reload() }, 1500)
                 } )
             </script>
 
