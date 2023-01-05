@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <!--Import the required tokenator script and a custom stylesheet-->
         <script src="tokenator.js"></script>
         <link href="style.css" type="text/css" rel="stylesheet" /> 
     </head>
     <body class="bg-blur">
         <script>
+            // Instantiate a new instance of Tokenator
             window.Tokenator = new window.Tokenator()
         </script>
 
@@ -14,8 +16,10 @@
             <div class="toast-body">
             </div>
         </div>
+
         <div class="mainContent">
-            <h1 class="header">BabbagePay</h1>
+            <!--Setup the page headers-->
+            <h1 class="header">PeerServ Payments Demo</h1>
             <h4 class="subheading">Peer-to-Peer Payments</h4>
             <p>Enter your recipient's identityKey, the amount, and send your payment!</p>
 
@@ -59,8 +63,8 @@
 
             <div id="loader" class="loader"></div>
 
-            <!--Display new messages-->
-            <h2 id="mailStatus"></h2>
+            <!--Display new payments in a table-->
+            <h2 id="messageBoxStatus"></h2>
             <table id="myMessages">
                 <tbody id="tbody">
                     <tr>
@@ -72,30 +76,38 @@
                 </tbody>
             </table>
 
-            <!--Check for new messages-->
+            <!--Check for incoming payments-->
             <script>
+                // Hide the list and loading animation to start
                 let list = document.getElementById("myMessages")
                 document.getElementById("loader").style.display = "none"
                 list.style.display = "none"
+
                 let newMessages = []
                 const checkforNewMessages = async () => {
                     let newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
+
                     // Example continous checking for new messages (could be improved!)
                     // while(!newMessages || newMessages.length === 0) {
                     //     await new Promise(resolve => setTimeout(resolve, 4000))
                     //     newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
                     // }
+
+                    // Update the messageBoxStatus if new messages are available
                     if (!newMessages || newMessages.length === 0) {
-                        document.getElementById('mailStatus').innerText = 'No new payments'
+                        document.getElementById('messageBoxStatus').innerText = 'No new payments'
                     } else {
-                        document.getElementById('mailStatus').innerText = 'Incoming Payments'
+                        document.getElementById('messageBoxStatus').innerText = 'Incoming Payments'
                         list.style.display = "block"
                     
+                        // Show the newest messages first
                         newMessages = newMessages.reverse()
+                        // Add each new payment message to the table
                         newMessages.forEach((message)=> {
                             let tblBody = document.getElementById("tbody")
                             const row = document.createElement("tr")
 
+                            // Sender column
                             const senderCell = document.createElement("td")
                             const sender = document.createTextNode(message.sender)
                             senderCell.appendChild(sender)
@@ -113,23 +125,24 @@
                             }
                             var formattedDate = date.toLocaleDateString('en-US', options)
                             
+                            // Date column
                             const dateCell = document.createElement("td")
                             const dateTxt = document.createTextNode(formattedDate)
                             dateCell.appendChild(dateTxt)
                             row.appendChild(dateCell)
 
-                            // Add the amount column
+                            // Amount column
                             const amount = JSON.parse(message.body).amount
                             const amountCell = document.createElement("td")
                             const amountTxt = document.createTextNode(amount + ' sats')
                             amountCell.appendChild(amountTxt)
                             row.appendChild(amountCell)
 
-                            const actionCell = document.createElement("td")
-
+                            // Accept Payment Action Column
                             const acceptBtn = document.createElement("BUTTON")
                             acceptBtn.innerHTML = "Accept"
                             acceptBtn.classList.add('acceptButton')
+                            // Setup the onClick handler for each payment message
                             acceptBtn.onclick = async () => {
                                 document.getElementById("loader").style.display = "block"
                                 try {
@@ -148,12 +161,14 @@
                                 // Refresh the page after 2sec
                                 setTimeout(() => { location.reload() }, 1500)
                             }
+                            const actionCell = document.createElement("td")
                             actionCell.appendChild(acceptBtn)
                             row.appendChild(actionCell)
                             tblBody.appendChild(row)
                         })
                     }
                 }
+                // Check for new messages when the page loads
                 checkforNewMessages()
             </script>
         </div>
