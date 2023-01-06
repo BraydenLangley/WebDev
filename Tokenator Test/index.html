@@ -45,7 +45,7 @@
                             return
                         }
                         const result = await window.Tokenator.sendMessage({ 
-                            type: 'payment_inbox', 
+                            messageBox: 'payment_inbox', 
                             amount, 
                             recipient
                         })
@@ -85,7 +85,7 @@
 
                 let newMessages = []
                 const checkforNewMessages = async () => {
-                    let newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
+                    let newMessages = await window.Tokenator.listMessages({ messageBoxes: ['payment_inbox'], acknowledged: false})
 
                     // Example continous checking for new messages (could be improved!)
                     // while(!newMessages || newMessages.length === 0) {
@@ -147,8 +147,7 @@
                                 document.getElementById("loader").style.display = "block"
                                 try {
                                     const result = await window.Tokenator.readMessage({
-                                        messageId: message.messageId, 
-                                        messageBoxType: 'payment_inbox'
+                                        messageIds: [message.messageId]
                                     })
                                     document.getElementById("loader").style.display = "none"
                                     const toast = document.getElementById('toast')
