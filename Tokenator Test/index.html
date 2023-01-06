@@ -2,13 +2,14 @@
 <html>
     <head>
         <!--Import the required tokenator script and a custom stylesheet-->
-        <script src="tokenator.js"></script>
+        <script src="PaymentTokenator.bundle.js"></script>
         <link href="style.css" type="text/css" rel="stylesheet" /> 
     </head>
     <body class="bg-blur">
         <script>
             // Instantiate a new instance of Tokenator
-            window.Tokenator = new window.Tokenator()
+            // Note: Bug in webpack bundling creates chained initialization
+            window.PaymentTokenator = new window.Tokenator.PaymentTokenator.EmailTokenator()
         </script>
 
         <!--Toast Notification-->
@@ -44,10 +45,9 @@
                             document.getElementById("loader").style.display = "none"
                             return
                         }
-                        const result = await window.Tokenator.sendMessage({ 
-                            messageBox: 'payment_inbox', 
-                            amount, 
-                            recipient
+                        const result = await window.PaymentTokenator.sendPayment({ 
+                            recipient,
+                            amount
                         })
                         document.getElementById("loader").style.display = "none"
                         const toast = document.getElementById('toast')
@@ -85,12 +85,12 @@
 
                 let newMessages = []
                 const checkforNewMessages = async () => {
-                    let newMessages = await window.Tokenator.listMessages({ messageBoxes: ['payment_inbox'], acknowledged: false})
+                    let newMessages = await window.PaymentTokenator.listIncomingPayments()
 
                     // Example continous checking for new messages (could be improved!)
                     // while(!newMessages || newMessages.length === 0) {
                     //     await new Promise(resolve => setTimeout(resolve, 4000))
-                    //     newMessages = await window.Tokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
+                    //     newMessages = await window.PaymentTokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
                     // }
 
                     // Update the messageBoxStatus if new messages are available
@@ -99,9 +99,15 @@
                     } else {
                         document.getElementById('messageBoxStatus').innerText = 'Incoming Payments'
                         list.style.display = "block"
+
+                        // Allow multi-read
+                        if (newMessages.length > 1) {
+                            document.getElementById('acceptAllBtn').style.display = "block"
+                        }
                     
                         // Show the newest messages first
                         newMessages = newMessages.reverse()
+                        window.incomingPayments = newMessages
                         // Add each new payment message to the table
                         newMessages.forEach((message)=> {
                             let tblBody = document.getElementById("tbody")
@@ -146,7 +152,7 @@
                             acceptBtn.onclick = async () => {
                                 document.getElementById("loader").style.display = "block"
                                 try {
-                                    const result = await window.Tokenator.readMessage({
+                                    const result = await window.PaymentTokenator.readMessage({
                                         messageIds: [message.messageId]
                                     })
                                     document.getElementById("loader").style.display = "none"
@@ -170,6 +176,27 @@
                 // Check for new messages when the page loads
                 checkforNewMessages()
             </script>
+            <!--Support receiving multiple payments at once-->
+            <script>
+                const acceptAllPayments = ( async () => {
+                    document.getElementById("loader").style.display = "block"
+                    try {
+                        const result = await window.PaymentTokenator.readMessage({
+                            messageIds: window.incomingPayments.map(x => x.messageId)
+                        })
+                        document.getElementById("loader").style.display = "none"
+                        const toast = document.getElementById('toast')
+                        toast.querySelector('.toast-body').innerHTML = "Payments recieved!"
+                        toast.classList.add('visible')
+                    } catch (error) {
+                        document.getElementById("loader").style.display = "none"
+                        alert(error)
+                    }
+                    // Refresh the page after 2sec
+                    setTimeout(() => { location.reload() }, 1500)
+                } )
+            </script>
+            <button style="display: none;" id='acceptAllBtn' class="acceptButton" onclick="{acceptAllPayments()}">Accept All</button>
         </div>
     </body>
 </html>
