@@ -41,7 +41,8 @@
                     document.getElementById("loader").style.display = "block"
                     try {
                         let recipient = document.getElementById('recipient').value
-                        let message = document.getElementById('message').value
+                        let subject = document.getElementById('subject').value
+                        let messageBody = document.getElementById('message').value
                         if (!recipient || !message) {
                             alert('Please fill out the required fields!')
                             document.getElementById("loader").style.display = "none"
@@ -49,8 +50,8 @@
                         }
                         const result = await window.EmailTokenator.sendEmail({ 
                             recipient,
-                            subject: 'Hello PeerServ',
-                            body: message
+                            subject,
+                            body: messageBody
                         })
                         document.getElementById("loader").style.display = "none"
                         const toast = document.getElementById('toast')
