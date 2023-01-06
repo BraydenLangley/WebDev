@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--Import the required tokenator script and a custom stylesheet-->
+        <script src="EmailTokenator.bundle.js"></script>
+        <link href="style.css" type="text/css" rel="stylesheet" /> 
+    </head>
+    <body class="bg-blur">
+        <script>
+            // Instantiate a new instance of Tokenator
+            // Note: Bug in webpack bundling creates chained initialization
+            window.EmailTokenator = new window.Tokenator.PaymentTokenator.EmailTokenator()
+        </script>
+
+        <!--Toast Notification-->
+        <div class="toast" id="toast">
+            <div class="toast-body">
+            </div>
+        </div>
+
+        <div class="mainContent">
+            <!--Setup the page headers-->
+            <h1 class="header">PeerServ Email Demo</h1>
+            <h4 class="subheading">Peer-to-Peer Emails</h4>
+            <p>Enter your recipient's identityKey, the subject, your message, and send your email!</p>
+
+            <!--Example input form-->
+            <form>
+                <label for="recipient">Recipient</label><br>
+                <input type="text" id="recipient" name="recipient" placeholder="identity key" value=""><br>
+                <label for="subject">Subject</label><br>
+                <input type="text" id="subject" name="subject" placeholder="Untitled"><br><br>
+                <label for="message">Message</label><br>
+                <textarea id="message" name="message" placeholder="Hello PeerServ"></textarea><br><br>
+            </form> 
+
+            <!--Handle submitting the payment-->
+            <button class="tokenButton" onclick="{handleSubmit()}">Send</button>
+            <script>
+                const handleSubmit = ( async () => {
+                    document.getElementById("loader").style.display = "block"
+                    try {
+                        let recipient = document.getElementById('recipient').value
+                        let message = document.getElementById('message').value
+                        if (!recipient || !message) {
+                            alert('Please fill out the required fields!')
+                            document.getElementById("loader").style.display = "none"
+                            return
+                        }
+                        const result = await window.EmailTokenator.sendEmail({ 
+                            recipient,
+                            subject: 'Hello PeerServ',
+                            body: message
+                        })
+                        document.getElementById("loader").style.display = "none"
+                        const toast = document.getElementById('toast')
+                        toast.querySelector('.toast-body').innerHTML = "Email Sent! 🎉"
+                        toast.classList.add('visible')
+                    } catch (error) {
+                        document.getElementById("loader").style.display = "none"
+                        alert(error)
+                    }
+                    setTimeout(() => { location.reload() }, 1500)
+                } )
+            </script>
+
+            <div id="loader" class="loader"></div>
+
+            <!--Display new payments in a table-->
+            <h2 id="messageBoxStatus"></h2>
+            <table id="myMessages">
+                <tbody id="tbody">
+                    <tr>
+                        <th>Sender</th>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th></th>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!--Check for incoming payments-->
+            <script>
+                // Hide the list and loading animation to start
+                let list = document.getElementById("myMessages")
+                document.getElementById("loader").style.display = "none"
+                list.style.display = "none"
+
+                let newMessages = []
+                const checkForNewEmails = async () => {
+                    let newMessages = await window.EmailTokenator.listIncomingEmails()
+
+                    // Example continous checking for new messages (could be improved!)
+                    // while(!newMessages || newMessages.length === 0) {
+                    //     await new Promise(resolve => setTimeout(resolve, 4000))
+                    //     newMessages = await window.EmailTokenator.listMessages({ messageBoxType: ['payment_inbox'], acknowledged: false})
+                    // }
+
+                    // Update the messageBoxStatus if new messages are available
+                    if (!newMessages || newMessages.length === 0) {
+                        document.getElementById('messageBoxStatus').innerText = 'No new Emails'
+                    } else {
+                        document.getElementById('messageBoxStatus').innerText = 'Incoming Emails'
+                        list.style.display = "block"
+
+                        // Allow multi-read
+                        if (newMessages.length > 1) {
+                            document.getElementById('acceptAllBtn').style.display = "block"
+                        }
+                    
+                        // Show the newest messages first
+                        newMessages = newMessages.reverse()
+                        window.incomingPayments = newMessages
+                        // Add each new payment message to the table
+                        newMessages.forEach((message)=> {
+                            let tblBody = document.getElementById("tbody")
+                            const row = document.createElement("tr")
+
+                            // Sender column
+                            const senderCell = document.createElement("td")
+                            const sender = document.createTextNode(message.sender)
+                            senderCell.appendChild(sender)
+                            row.appendChild(senderCell)
+
+                            // Format the timestamp
+                            var date = new Date(message.created_at)
+                            var options = {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            second: 'numeric'
+                            }
+                            var formattedDate = date.toLocaleDateString('en-US', options)
+                            
+                            // Date column
+                            const dateCell = document.createElement("td")
+                            const dateTxt = document.createTextNode(formattedDate)
+                            dateCell.appendChild(dateTxt)
+                            row.appendChild(dateCell)
+
+                            // Amount column
+                            const emailBody = JSON.parse(message.body).body
+                            const emailSubject = JSON.parse(message.body).subject
+                            const subjectCell = document.createElement("td")
+                            const subjectTxt = document.createTextNode(emailSubject)
+                            subjectCell.appendChild(subjectTxt)
+                            row.appendChild(subjectCell)
+
+                            // Accept Payment Action Column
+                            const acceptBtn = document.createElement("BUTTON")
+                            acceptBtn.innerHTML = "Read"
+                            acceptBtn.classList.add('acceptButton')
+                            // Setup the onClick handler for each payment message
+                            acceptBtn.onclick = async () => {
+                                document.getElementById("loader").style.display = "block"
+                                try {
+                                    const result = await window.EmailTokenator.receiveEmail({
+                                        messageIds: [message.messageId]
+                                    })
+                                    alert(emailBody)
+                                    document.getElementById("loader").style.display = "none"
+                                    const toast = document.getElementById('toast')
+                                    toast.querySelector('.toast-body').innerHTML = "Email message deleted!"
+                                    toast.classList.add('visible')
+                                } catch (error) {
+                                    document.getElementById("loader").style.display = "none"
+                                    alert(error)
+                                }
+                                // Refresh the page after 2sec
+                                setTimeout(() => { location.reload() }, 1500)
+                            }
+                            const actionCell = document.createElement("td")
+                            actionCell.appendChild(acceptBtn)
+                            row.appendChild(actionCell)
+                            tblBody.appendChild(row)
+                        })
+                    }
+                }
+                // Check for new messages when the page loads
+                checkForNewEmails()
+            </script>
+            <!--Support receiving multiple payments at once-->
+            <script>
+                const acceptAllPayments = ( async () => {
+                    document.getElementById("loader").style.display = "block"
+                    try {
+                        const result = await window.EmailTokenator.receiveEmail({
+                            messageIds: window.incomingPayments.map(x => x.messageId)
+                        })
+                        document.getElementById("loader").style.display = "none"
+                        const toast = document.getElementById('toast')
+                        toast.querySelector('.toast-body').innerHTML = "Payments recieved!"
+                        toast.classList.add('visible')
+                    } catch (error) {
+                        document.getElementById("loader").style.display = "none"
+                        alert(error)
+                    }
+                    // Refresh the page after 2sec
+                    setTimeout(() => { location.reload() }, 1500)
+                } )
+            </script>
+            <button style="display: none;" id='acceptAllBtn' class="acceptButton" onclick="{acceptAllPayments()}">Accept All</button>
+        </div>
+    </body>
+</html>
