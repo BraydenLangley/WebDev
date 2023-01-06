@@ -103,11 +103,6 @@
                     } else {
                         document.getElementById('messageBoxStatus').innerText = 'Incoming Emails'
                         list.style.display = "block"
-
-                        // Allow multi-read
-                        if (newMessages.length > 1) {
-                            document.getElementById('acceptAllBtn').style.display = "block"
-                        }
                     
                         // Show the newest messages first
                         newMessages = newMessages.reverse()
@@ -182,27 +177,6 @@
                 // Check for new messages when the page loads
                 checkForNewEmails()
             </script>
-            <!--Support receiving multiple payments at once-->
-            <script>
-                const acceptAllPayments = ( async () => {
-                    document.getElementById("loader").style.display = "block"
-                    try {
-                        const result = await window.EmailTokenator.receiveEmail({
-                            messageIds: window.incomingPayments.map(x => x.messageId)
-                        })
-                        document.getElementById("loader").style.display = "none"
-                        const toast = document.getElementById('toast')
-                        toast.querySelector('.toast-body').innerHTML = "Payments recieved!"
-                        toast.classList.add('visible')
-                    } catch (error) {
-                        document.getElementById("loader").style.display = "none"
-                        alert(error)
-                    }
-                    // Refresh the page after 2sec
-                    setTimeout(() => { location.reload() }, 1500)
-                } )
-            </script>
-            <button style="display: none;" id='acceptAllBtn' class="acceptButton" onclick="{acceptAllPayments()}">Accept All</button>
         </div>
     </body>
 </html>
