@@ -152,7 +152,7 @@
                             acceptBtn.onclick = async () => {
                                 document.getElementById("loader").style.display = "block"
                                 try {
-                                    const result = await window.PaymentTokenator.readMessage({
+                                    const result = await window.PaymentTokenator.receivePayment({
                                         messageIds: [message.messageId]
                                     })
                                     document.getElementById("loader").style.display = "none"
