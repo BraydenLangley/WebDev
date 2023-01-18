@@ -87,9 +87,12 @@
                 document.getElementById("loader").style.display = "none"
                 list.style.display = "none"
 
-                let newMessages = []
+                // let newMessages = []
+                let emailMessages = []
                 const checkForNewEmails = async () => {
-                    let newMessages = await window.EmailTokenator.listIncomingEmails()
+                    debugger
+                    let result = await window.EmailTokenator.checkEmail()
+                    emailMessages = await window.EmailTokenator.readEmail()
 
                     // Example continous checking for new messages (could be improved!)
                     // while(!newMessages || newMessages.length === 0) {
@@ -98,28 +101,28 @@
                     // }
 
                     // Update the messageBoxStatus if new messages are available
-                    if (!newMessages || newMessages.length === 0) {
-                        document.getElementById('messageBoxStatus').innerText = 'No new Emails'
+                    if (!emailMessages || emailMessages.length === 0) {
+                        document.getElementById('messageBoxStatus').innerText = 'No Emails'
                     } else {
-                        document.getElementById('messageBoxStatus').innerText = 'Incoming Emails'
+                        document.getElementById('messageBoxStatus').innerText = 'Emails Messages in Inbox'
                         list.style.display = "block"
                     
                         // Show the newest messages first
-                        newMessages = newMessages.reverse()
-                        window.incomingPayments = newMessages
+                        emailMessages = emailMessages.reverse()
+                        window.emailMessages = emailMessages
                         // Add each new payment message to the table
-                        newMessages.forEach((message)=> {
+                        emailMessages.forEach((message)=> {
                             let tblBody = document.getElementById("tbody")
                             const row = document.createElement("tr")
 
                             // Sender column
                             const senderCell = document.createElement("td")
-                            const sender = document.createTextNode(message.sender)
+                            const sender = document.createTextNode(message.token.customInstructions.sender)
                             senderCell.appendChild(sender)
                             row.appendChild(senderCell)
 
                             // Format the timestamp
-                            var date = new Date(message.created_at)
+                            var date = new Date(message.dateSent)
                             var options = {
                             year: 'numeric',
                             month: 'long',
@@ -137,8 +140,8 @@
                             row.appendChild(dateCell)
 
                             // Amount column
-                            const emailBody = JSON.parse(message.body).body
-                            const emailSubject = JSON.parse(message.body).subject
+                            const emailBody = message.body
+                            const emailSubject = message.subject
                             const subjectCell = document.createElement("td")
                             const subjectTxt = document.createTextNode(emailSubject)
                             subjectCell.appendChild(subjectTxt)
@@ -150,22 +153,17 @@
                             acceptBtn.classList.add('acceptButton')
                             // Setup the onClick handler for each payment message
                             acceptBtn.onclick = async () => {
-                                document.getElementById("loader").style.display = "block"
+                                // document.getElementById("loader").style.display = "block"
                                 try {
-                                    const result = await window.EmailTokenator.readEmail({
-                                        messageIds: [message.messageId]
-                                    })
-                                    alert(emailBody)
-                                    document.getElementById("loader").style.display = "none"
-                                    const toast = document.getElementById('toast')
-                                    toast.querySelector('.toast-body').innerHTML = "Email message deleted!"
-                                    toast.classList.add('visible')
+                                    document.getElementById('recipient').value = message.token.customInstructions.sender
+                                    document.getElementById('subject').value = emailSubject
+                                    document.getElementById('message').value = emailBody
                                 } catch (error) {
                                     document.getElementById("loader").style.display = "none"
                                     alert(error)
                                 }
                                 // Refresh the page after 2sec
-                                setTimeout(() => { location.reload() }, 1500)
+                                // setTimeout(() => { location.reload() }, 1500)
                             }
                             const actionCell = document.createElement("td")
                             actionCell.appendChild(acceptBtn)
