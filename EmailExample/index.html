@@ -152,7 +152,7 @@
                             acceptBtn.onclick = async () => {
                                 document.getElementById("loader").style.display = "block"
                                 try {
-                                    const result = await window.EmailTokenator.receiveEmail({
+                                    const result = await window.EmailTokenator.readEmail({
                                         messageIds: [message.messageId]
                                     })
                                     alert(emailBody)
