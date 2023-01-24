@@ -9,7 +9,7 @@
         <script>
             // Instantiate a new instance of Tokenator
             // Note: Bug in webpack bundling creates chained initialization
-            window.EmailTokenator = new window.Tokenator.PaymentTokenator.EmailTokenator()
+            window.EmailTokenator = new window.EmailTokenator()
         </script>
 
         <!--Toast Notification-->
@@ -91,9 +91,10 @@
                 let emailMessages = []
                 const checkForNewEmails = async () => {
                     debugger
+                    document.getElementById("loader").style.display = "block"
                     let result = await window.EmailTokenator.checkEmail()
                     emailMessages = await window.EmailTokenator.readEmail()
-
+                    document.getElementById("loader").style.display = "none"
                     // Example continous checking for new messages (could be improved!)
                     // while(!newMessages || newMessages.length === 0) {
                     //     await new Promise(resolve => setTimeout(resolve, 4000))
