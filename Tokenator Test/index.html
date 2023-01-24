@@ -8,8 +8,7 @@
     <body class="bg-blur">
         <script>
             // Instantiate a new instance of Tokenator
-            // Note: Bug in webpack bundling creates chained initialization
-            window.PaymentTokenator = new window.Tokenator.PaymentTokenator.EmailTokenator()
+            window.PaymentTokenator = new window.PaymentTokenator()
         </script>
 
         <!--Toast Notification-->
@@ -85,8 +84,10 @@
 
                 let newMessages = []
                 const checkforNewMessages = async () => {
-                    let newMessages = await window.PaymentTokenator.listIncomingPayments()
-
+                    document.getElementById("loader").style.display = "block"
+                    let payments = await window.PaymentTokenator.listIncomingPayments()
+                    document.getElementById("loader").style.display = "none"
+                    console.log(payments)
                     // Example continous checking for new messages (could be improved!)
                     // while(!newMessages || newMessages.length === 0) {
                     //     await new Promise(resolve => setTimeout(resolve, 4000))
@@ -94,33 +95,36 @@
                     // }
 
                     // Update the messageBoxStatus if new messages are available
-                    if (!newMessages || newMessages.length === 0) {
+                    if (!payments || payments.length === 0) {
                         document.getElementById('messageBoxStatus').innerText = 'No new payments'
                     } else {
                         document.getElementById('messageBoxStatus').innerText = 'Incoming Payments'
                         list.style.display = "block"
 
+                        const toast = document.getElementById('toast')
+                        toast.querySelector('.toast-body').innerHTML = "New Payments!"
+                        toast.classList.add('visible')
+
                         // Allow multi-read
-                        if (newMessages.length > 1) {
+                        if (payments.length > 1) {
                             document.getElementById('acceptAllBtn').style.display = "block"
                         }
-                    
                         // Show the newest messages first
-                        newMessages = newMessages.reverse()
-                        window.incomingPayments = newMessages
+                        payments = payments.reverse()
+                        window.incomingPayments = payments
                         // Add each new payment message to the table
-                        newMessages.forEach((message)=> {
+                        payments.forEach((payment)=> {
                             let tblBody = document.getElementById("tbody")
                             const row = document.createElement("tr")
 
                             // Sender column
                             const senderCell = document.createElement("td")
-                            const sender = document.createTextNode(message.sender)
+                            const sender = document.createTextNode(payment.sender)
                             senderCell.appendChild(sender)
                             row.appendChild(senderCell)
 
                             // Format the timestamp
-                            var date = new Date(message.created_at)
+                            var date = new Date(payment.created_at)
                             var options = {
                             year: 'numeric',
                             month: 'long',
@@ -138,7 +142,11 @@
                             row.appendChild(dateCell)
 
                             // Amount column
-                            const amount = JSON.parse(message.body).amount
+                            let amount = payment.amount
+                            if (!amount) {
+                                amount = payment.token.amount
+                            }
+                 
                             const amountCell = document.createElement("td")
                             const amountTxt = document.createTextNode(amount + ' sats')
                             amountCell.appendChild(amountTxt)
@@ -152,12 +160,11 @@
                             acceptBtn.onclick = async () => {
                                 document.getElementById("loader").style.display = "block"
                                 try {
-                                    const result = await window.PaymentTokenator.receivePayment({
-                                        messageIds: [message.messageId]
-                                    })
+                                    debugger
+                                    const result = await window.PaymentTokenator.acceptPayment(payment)
                                     document.getElementById("loader").style.display = "none"
                                     const toast = document.getElementById('toast')
-                                    toast.querySelector('.toast-body').innerHTML = "Payment recieved!"
+                                    toast.querySelector('.toast-body').innerHTML = "Payment Received!"
                                     toast.classList.add('visible')
                                 } catch (error) {
                                     document.getElementById("loader").style.display = "none"
@@ -170,6 +177,8 @@
                             actionCell.appendChild(acceptBtn)
                             row.appendChild(actionCell)
                             tblBody.appendChild(row)
+                            
+                            setTimeout(() => { toast.classList.remove('visible') }, 1500)
                         })
                     }
                 }
