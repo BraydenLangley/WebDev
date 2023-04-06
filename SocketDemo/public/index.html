@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat App</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  </head>
+  <body>
+    <div class="header">
+        <img class="headerImage" src="https://cdn-icons-png.flaticon.com/512/14/14558.png"/>
+        <h1>BabbageDirect</h1>
+        <h4 class="subheading">Connect directly and securely with Authrite secured connections!</h4>
+    </div>
+    <div>
+        <ul id="chat">
+        </ul>
+    
+        <form action="">
+          <input id="input" autocomplete="off" type="text" /><button><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+  </body>
+</html>
