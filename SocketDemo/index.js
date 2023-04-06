@@ -9,29 +9,28 @@ app.use(express.static(__dirname + '/public'))
 
 // Configure socket connections
 io.on('connection', function(socket) {
-    console.log('A user connected')
+  console.log('A user connected')
 
-    // Handling typing notifications
-    socket.on("typing", (userID) => {
+  // Handling typing notifications 
+  socket.on("typing", (userID) => {
+    console.log('typing')
     socket.broadcast.emit("typing", userID)
-    })
-
-    socket.on("stoppedTyping", (userID) => {
+  })
+  
+  socket.on("stoppedTyping", (userID) => {
     socket.broadcast.emit("stoppedTyping", userID)
-    })
+  })
 
-    // Handle chat message broadcasts
-    socket.on('message', function(msg) {
-    io.emit('message', {
-        id: socket.id,
-        text: msg
+  socket.on('chatMessage', function(msg) {
+    io.emit('chatMessage', {
+      id: socket.id,
+      text: msg
     })
-    })
+  })
 
-    // Notify about user disconnection
-    socket.on('disconnect', function() {
+  socket.on('disconnect', function() {
     console.log('A user disconnected')
-    })
+  })
 })
 
 

@@ -19,6 +19,10 @@
     padding-top: 10px;
     color: rgb(40, 40, 40);
   }
+  .status {
+    color: red;
+    padding: 20px;
+  }
   .headerImage {
     display: block;
     margin: 0 auto;
@@ -34,6 +38,7 @@
     justify-content: center;
     margin: 20px auto;
     max-width: 80vw;
+    padding-bottom: 100px;
   }
   
   input[type="text"] {
