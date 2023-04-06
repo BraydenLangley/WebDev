@@ -5,16 +5,18 @@ var messages = document.querySelector('#chat')
 var BabbageSDK = window.BabbageSDK
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+let identityKey = 'unknown'
 
 const checkAuthentication = async () => {
 let authenticated = false
   while (!authenticated) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
-        await window.BabbageSDK.isAuthenticated()
+        await BabbageSDK.isAuthenticated()
         document.getElementById('chatContainer').style.visibility = 'visible'
         document.getElementById('status').innerText = ''
         authenticated = true
+        identityKey = await BabbageSDK.getPublicKey({ identityKey: true })
     } catch (e) {
         // handle error
         document.getElementById('chatContainer').style.visibility = 'hidden'
@@ -67,7 +69,7 @@ form.addEventListener('submit', function(e) {
   clearTimeout(typingTimer)
   
   if (input.value) {
-    socket.emit('chatMessage', input.value)
+    socket.emit('chatMessage', { text: input.value, identityKey })
     input.value = ''
   }
 })
@@ -82,6 +84,7 @@ socket.on('chatMessage', function(msg) {
     li.classList.add('sent', 'messages')
   } else {
     li.classList.add('recieved', 'messages')
+    document.getElementById('identityKey').innerText = 'Msg from: ' + msg.identityKey
   }
   li.appendChild(div)
 
