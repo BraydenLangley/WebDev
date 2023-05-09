@@ -1,11 +1,12 @@
 function calculateEarnings() {
     var transactions = document.getElementById("transactions").value;
     var fee = document.getElementById("fee").value;
+    var bsvPrice = document.getElementById("bsvPrice").value;
   
     if (transactions && fee) {
       var earningsSatoshis = transactions * fee;
       var earningsBSV = earningsSatoshis / 100000000;
-      var earningsUSD = earningsBSV * 30; // Current price: 1 BSV = $30
+      var earningsUSD = earningsBSV * bsvPrice; // Current price: 1 BSV = $30
 
       let formatting_options = {
         style: 'currency',
