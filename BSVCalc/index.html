@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <div class="calculator">
+    <h1>Transaction Earnings Calculator</h1>
+    <label for="transactions">Transactions per Month:</label>
+    <input type="number" id="transactions" min="0">
+    <label for="fee">Comission per Transaction (Satoshis):</label>
+    <input type="number" id="fee" min="0">
+
+    <!--Calculate the earnings in BSV, USD, and Satoshis-->
+    <button onclick="calculateEarnings()">Calculate</button>
+
+    <div id="result">
+      <p id="earnings-satoshis"></p>
+      <p id="earnings-bsv"></p>
+      <p id="earnings-usd"></p>
+      <p id="earnings-usd-annual"></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
