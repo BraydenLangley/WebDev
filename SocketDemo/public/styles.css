@@ -100,20 +100,19 @@
     margin-bottom: 5px;
     display: inline-block;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    background-color: blue;
   }
   
-  .recieved {
+  .received {
     align-items: flex-start;
   }
   
-  .recieved .message {
+  .received .message {
     margin-right: 25%;
     background-color: #ffffff;
     position: relative;
   }
   
-  .recieved .message.last:before {
+  .received .message.last:before {
     content: "";
     position: absolute;
     z-index: 0;
@@ -124,7 +123,7 @@
     background: #ffffff;
     border-bottom-right-radius: 15px;
   }
-  .recieved .message.last:after {
+  .received .message.last:after {
     content: "";
     position: absolute;
     z-index: 1;
@@ -173,3 +172,10 @@
     border-bottom-left-radius: 10px;
   }
   
+  .sent-color {
+    background-color: #b2dffb; /* Change this to your desired color */
+  }
+  
+  .received-color {
+    background-color: #e8e8e8; /* Change this to your desired color */
+  }

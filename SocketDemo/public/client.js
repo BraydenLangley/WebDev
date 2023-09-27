@@ -1,132 +1,125 @@
-var socket = io()
-var form = document.querySelector('form')
-var input = document.querySelector('#input')
-var messages = document.querySelector('#chat')
-var BabbageSDK = window.BabbageSDK
+// const socket = io()
+// const socket = await new window.Authrite.Authrite().connect('http://localhost:3000')
+new window.Authrite.Authrite().connect('https://74a5-185-216-231-73.ngrok-free.app')
+  .then((io) => {
+    const form = document.querySelector('form')
+    const input = document.querySelector('#input')
+    const messages = document.querySelector('#chat')
+    const BabbageSDK = window.BabbageSDK
+    let connectionId
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-let identityKey = 'unknown'
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+    let identityKey = 'unknown'
 
-const checkAuthentication = async () => {
-let authenticated = false
-  while (!authenticated) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    try {
-        await BabbageSDK.isAuthenticated()
-        document.getElementById('chatContainer').style.visibility = 'visible'
-        document.getElementById('status').innerText = ''
-        authenticated = true
-        identityKey = await BabbageSDK.getPublicKey({ identityKey: true })
-    } catch (e) {
-        // handle error
-        document.getElementById('chatContainer').style.visibility = 'hidden'
-        document.getElementById('status').innerText = 'Babbage MetaNet Client is required!'
+    const checkAuthentication = async () => {
+      let authenticated = false
+      while (!authenticated) {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        try {
+          await BabbageSDK.isAuthenticated()
+          document.getElementById('chatContainer').style.visibility = 'visible'
+          document.getElementById('status').innerText = ''
+          authenticated = true
+          identityKey = await BabbageSDK.getPublicKey({ identityKey: true })
+        } catch (e) {
+          // handle error
+          document.getElementById('chatContainer').style.visibility = 'hidden'
+          document.getElementById('status').innerText = 'Babbage MetaNet Client is required!'
+        }
+      }
+      // Once authenticated return true
+      // socket = await new Authrite().connect('http://localhost:3000')
+      connectionId = io.socket.id
+      return true
     }
-  }
-  // Once authenticated return true
-  return true
-}
 
-checkAuthentication();
-
-// const checkAuthentication = async () => {
-    // let authenticated = false
-    
-    // (async () => {
-    //     while (authenticated !== true) {
-    //         await new Promise((resolve) => setTimeout(resolve, 5000));
-    //         try {
-    //             // Check if the user is authenticated
-    //             // sleep(1000)
-    //             authenticated = await window.BabbageSDK.isAuthenticated()
-    //             document.getElementById('chatContainer').style.visibility = 'visible'
-    //             document.getElementById('status').innerText = ''
-    //             return true
-    //             // document
-    //             // .getElementById('GetBabbageButton')
-    //             // .style.visibility = 'hidden'
-    //             // document
-    //             // .getElementById('GetCertificateButton')
-    //             // .style.visibility = 'visible'
-    //         } catch (e) {
-    //             // document
-    //             // .getElementById('GetBabbageButton')
-    //             // .style.visibility = 'visible'
-    //             // document
-    //             // .getElementById('GetCertificateButton')
-    //             // .style.visibility = 'hidden'
-    //             document.getElementById('chatContainer').style.visibility = 'hidden'
-    //             document.getElementById('status').innerText = 'Babbage MetaNet Client is required!'
-    //         }
-    //     }
-    // })()
-// }
-// checkAuthentication()
-
-form.addEventListener('submit', function(e) {
-  e.preventDefault()
-  // Clear typing timer
-  clearTimeout(typingTimer)
-  
-  if (input.value) {
-    socket.emit('chatMessage', { text: input.value, identityKey })
-    input.value = ''
-  }
-})
-
-socket.on('chatMessage', function(msg) {
-    var li = document.createElement('li')
-    var div = document.createElement('div')
-    div.classList.add('message', 'last')
-    div.textContent = msg.text
-  
-  if (socket.id === msg.id) {
-    li.classList.add('sent', 'messages')
-  } else {
-    li.classList.add('recieved', 'messages')
-    document.getElementById('identityKey').innerText = 'Msg from: ' + msg.identityKey
-  }
-  li.appendChild(div)
-
-  checkTypingIndicator()
-  messages.appendChild(li)
-})
-
-const inputField = document.getElementById("input")
-let typingTimer
-const doneTypingInterval = 2000 // Time in ms
-
-input.addEventListener('input', () => {
-    // User is typing, emit typing event
-    socket.emit('typing')
-  
-    // Clear typing timer and start a new one
-    clearTimeout(typingTimer)
-    typingTimer = setTimeout(() => { socket.emit('stoppedTyping')}, doneTypingInterval)
-  })
-  
-
-socket.on('typing', (data) => {
-    if (!document.getElementById('typingIndicator')) {
-        var li = document.createElement('li')
-        li.id = 'typingIndicator'
-        var div = document.createElement('div')
-        div.classList.add('message', 'last')
-        div.textContent = 'typing...'
-        li.classList.add('recieved', 'messages')
-        li.appendChild(div)
-        messages.appendChild(li)
-    }
-})
-
-socket.on('stoppedTyping', async (data) => {
-    checkTypingIndicator()
-})
-
-const checkTypingIndicator = () => {
-    var li = document.getElementById('typingIndicator')
-    if (li) {
-        messages.removeChild(li)
-    }
     checkAuthentication()
-}
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault()
+      // Clear typing timer
+      // if (typingTimer) {
+      //   clearTimeout(typingTimer)
+      // }
+
+      if (input.value) {
+        io.emit('chatMessage', { text: input.value, identityKey })
+        input.value = ''
+      }
+    })
+
+    io.on('chatMessage', function (msg) {
+      console.log('Signature verified!')
+      const li = document.createElement('li')
+      const div = document.createElement('div')
+      div.classList.add('message', 'last')
+      div.textContent = msg.text
+
+      console.log(msg)
+      console.log(connectionId)
+      if (msg.id === connectionId) {
+        li.classList.add('sent', 'messages')
+        div.classList.add('sent-color') // Add a class for sent messages
+      } else {
+        li.classList.add('received', 'messages')
+        div.classList.add('received-color') // Add a class for received messages
+        document.getElementById('identityKey').innerText = 'Msg from: ' + msg.identityKey
+      }
+
+      li.appendChild(div)
+
+      checkTypingIndicator()
+      messages.appendChild(li)
+    })
+
+    const inputField = document.getElementById('input')
+    let typingTimer
+    const doneTypingInterval = 1500 // Time in ms
+    let isTyping = false
+    input.addEventListener('input', () => {
+      // Clear typing timer and start a new one
+      if (typingTimer) {
+        clearTimeout(typingTimer)
+      }
+      typingTimer = setTimeout(() => { io.emit('stoppedTyping', 'false') }, doneTypingInterval)
+
+      // User is typing, emit typing event
+      if (!isTyping) {
+        isTyping = true
+        io.emit('typing', identityKey)
+        console.log('should be typing....')
+      }
+    })
+
+    io.on('typing', (msg) => {
+      if (connectionId !== msg.id) {
+        console.log('typing ', msg)
+        if (!document.getElementById('typingIndicator')) {
+          const li = document.createElement('li')
+          li.id = 'typingIndicator'
+          const div = document.createElement('div')
+          div.classList.add('message', 'last')
+          div.textContent = 'typing...'
+          li.classList.add('received', 'messages')
+          li.appendChild(div)
+          messages.appendChild(li)
+        }
+      }
+    })
+
+    io.on('stoppedTyping', async (data) => {
+      isTyping = false
+      checkTypingIndicator()
+    })
+
+    const checkTypingIndicator = () => {
+      const li = document.getElementById('typingIndicator')
+      if (li) {
+        messages.removeChild(li)
+      }
+      checkAuthentication()
+    }
+  })
+  .catch((error) => {
+    console.error(error)
+  })
